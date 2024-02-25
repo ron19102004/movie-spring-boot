@@ -1,5 +1,6 @@
 package com.movie.app.auth;
 
+import com.movie.app.aws.AwsS3Service;
 import com.movie.app.dto.AuthRegisterDto;
 import com.movie.app.dto.AuthSignInDto;
 import com.movie.app.exceptions.ServiceException;
@@ -9,6 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import javax.naming.AuthenticationException;
 import java.sql.SQLException;
@@ -18,6 +20,21 @@ import java.sql.SQLException;
 public class AuthController {
     @Autowired
     private AuthService authService;
+    @Autowired
+    private AwsS3Service awsS3Service;
+
+    @PostMapping("/upload")
+    public String up(@RequestParam(value = "file") @NotNull MultipartFile file){
+        return this.awsS3Service.upload(file,"image");
+    }
+    @ExceptionHandler(Exception.class)
+    public ResponseEntity<ResponseData> handleException(Exception exception) {
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(ResponseData.builder()
+                .status(false)
+                .message("Error!!")
+                .data(exception.getMessage())
+                .build());
+    }
     @PostMapping("/register")
     public ResponseEntity<ResponseData> register(@RequestBody @NotNull AuthRegisterDto authRegisterDto) {
         return ResponseEntity.ok(

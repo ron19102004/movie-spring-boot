@@ -14,6 +14,9 @@ import org.springframework.web.multipart.MultipartFile;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 
 @Service
 public class AwsS3ServiceImpl implements AwsS3Service {
@@ -33,8 +36,19 @@ public class AwsS3ServiceImpl implements AwsS3Service {
         PutObjectRequest putRequest = new PutObjectRequest(this.bucketName, fileName, file);
         putRequest.withCannedAcl(CannedAccessControlList.PublicRead);
         this.s3Client.putObject(putRequest);
-        file.delete();
+        this.scheduleFileDeletion(file);
         return fileUrl;
+    }
+
+    private void scheduleFileDeletion(File file) {
+        // You can use a scheduled task executor or a timer to delete the file after some time
+        // For example, using a ScheduledExecutorService
+        ScheduledExecutorService executorService = Executors.newSingleThreadScheduledExecutor();
+        executorService.schedule(() -> {
+            System.out.println("delete");
+            file.delete();
+            executorService.shutdown(); // Shut down the executor after deleting the file
+        }, 5, TimeUnit.MINUTES); // Delete the file after 10 minutes (you can adjust this time as needed)
     }
 
     @Override
