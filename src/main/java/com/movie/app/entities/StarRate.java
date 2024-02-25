@@ -20,4 +20,7 @@ public class StarRate extends BaseEntity{
     @ManyToOne
     @JoinColumn(name = "movie_id",nullable = false,referencedColumnName = "movie_id")
     private Movie movie;
+    @ManyToOne
+    @JoinColumn(name = "user_id", nullable = false, referencedColumnName = "user_id")
+    private User user;
 }

@@ -45,6 +45,9 @@ public class User extends BaseEntity implements UserDetails {
     private List<WatchLater> watchLaters;
     @OneToMany(mappedBy = "user")
     private List<Comment> comments;
+    @OneToMany(mappedBy = "user")
+    private List<StarRate> starRates;
+
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
         return List.of(new SimpleGrantedAuthority(this.role.toString()));

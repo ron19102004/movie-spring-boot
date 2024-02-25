@@ -24,16 +24,15 @@ public class AwsS3ServiceImpl implements AwsS3Service {
     private String bucketName;
     @Value("${cloud.endpointUrl}")
     private String endpointUrl;
-
     @Autowired
     private AmazonS3 s3Client;
 
     @Override
     public String upload(MultipartFile multipartFile, String folderName) {
-        File file = this.convertMultipartFileToFile(multipartFile);
-        String fileName = folderName + "/" + System.currentTimeMillis() + "_" + multipartFile.getOriginalFilename();
-        String fileUrl = endpointUrl + "/" + bucketName + "/" + fileName;
-        PutObjectRequest putRequest = new PutObjectRequest(this.bucketName, fileName, file);
+        final File file = this.convertMultipartFileToFile(multipartFile);
+        final String fileName = folderName + "/" + System.currentTimeMillis() + "_" + multipartFile.getOriginalFilename();
+        final String fileUrl = endpointUrl + "/" + bucketName + "/" + fileName;
+        final PutObjectRequest putRequest = new PutObjectRequest(this.bucketName, fileName, file);
         putRequest.withCannedAcl(CannedAccessControlList.PublicRead);
         this.s3Client.putObject(putRequest);
         this.scheduleFileDeletion(file);
@@ -53,8 +52,9 @@ public class AwsS3ServiceImpl implements AwsS3Service {
 
     @Override
 
-    public byte[] download(String fileName) {
-        S3Object object = this.s3Client.getObject(this.bucketName, fileName);
+    public byte[] download(String fileName,String folder) {
+        final String _fileName = folder+"/"+fileName;
+        final S3Object object = this.s3Client.getObject(this.bucketName, _fileName);
         S3ObjectInputStream s3ObjectInputStream = object.getObjectContent();
         try {
             return IOUtils.toByteArray(s3ObjectInputStream);
