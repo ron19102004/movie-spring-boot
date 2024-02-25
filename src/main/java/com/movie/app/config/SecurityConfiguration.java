@@ -1,6 +1,7 @@
 package com.movie.app.config;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationProvider;
@@ -43,8 +44,9 @@ public class SecurityConfiguration {
                 .cors(AbstractHttpConfigurer::disable)
                 .csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(authorizationManagerRequestMatcherRegistry ->
-                        authorizationManagerRequestMatcherRegistry.requestMatchers("/api/auth/*").permitAll()
-                                .requestMatchers("*").authenticated()
+                        authorizationManagerRequestMatcherRegistry
+                                .requestMatchers("/api/auth/**").permitAll()
+                                .requestMatchers("/**").authenticated()
                 )
                 .exceptionHandling(httpSecurityExceptionHandlingConfigurer ->
                         httpSecurityExceptionHandlingConfigurer.authenticationEntryPoint(this.authenticationEntryPoint))

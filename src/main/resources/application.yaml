@@ -1,5 +1,5 @@
 server:
-  port: 8000
+  port: 8080
 spring:
   datasource:
     url: jdbc:postgresql://localhost:5432/movie_prj
@@ -16,3 +16,15 @@ spring:
         jdbc:
           batch_size: 50
         show_sql: true
+cloud:
+  endpointUrl: https://s3.ap-southeast-2.amazonaws.com
+  aws:
+    credentials:
+      access-key: AKIAQ3EGWTN6ONK2Y5NQ
+      secret-key: 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
+    region:
+      static: ap-southeast-2
+    stack:
+      auto: false
+    bucket:
+      name: movie-spring
