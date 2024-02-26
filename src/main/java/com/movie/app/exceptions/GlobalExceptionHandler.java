@@ -4,6 +4,7 @@ import com.movie.app.utils.ResponseData;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.AccessDeniedException;
+import org.springframework.web.bind.MissingServletRequestParameterException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
@@ -12,8 +13,18 @@ import java.sql.SQLException;
 
 @RestControllerAdvice
 public class GlobalExceptionHandler {
+    @ExceptionHandler(Exception.class)
+    public ResponseEntity<ResponseData> handleServiceException(Exception e) {
+        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                .body(ResponseData.builder()
+                        .status(false)
+                        .message(e.getMessage())
+                        .data(null)
+                        .build());
+    }
+
     @ExceptionHandler(SQLException.class)
-    public ResponseEntity<ResponseData> handleSQLException(Exception exception) {
+    public ResponseEntity<ResponseData> handleSQLException(SQLException exception) {
         return ResponseEntity.status(HttpStatus.BAD_GATEWAY).body(ResponseData.builder()
                 .status(false)
                 .message("Server Error!!")
@@ -21,10 +32,18 @@ public class GlobalExceptionHandler {
                 .build());
     }
     @ExceptionHandler(AuthenticationException.class)
-    public ResponseEntity<ResponseData> handleAuthenticationException(Exception exception) {
+    public ResponseEntity<ResponseData> handleAuthenticationException(AuthenticationException exception) {
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(ResponseData.builder()
                 .status(false)
                 .message("Authentication Error!!")
+                .data(exception.getMessage())
+                .build());
+    }
+    @ExceptionHandler(MissingServletRequestParameterException.class)
+    public ResponseEntity<ResponseData> handleMissingServletRequestParameterException(MissingServletRequestParameterException exception) {
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(ResponseData.builder()
+                .status(false)
+                .message("Missing Request Parameter !!")
                 .data(exception.getMessage())
                 .build());
     }

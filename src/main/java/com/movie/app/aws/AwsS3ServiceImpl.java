@@ -1,22 +1,19 @@
 package com.movie.app.aws;
 
+import com.amazonaws.AmazonServiceException;
 import com.amazonaws.services.s3.AmazonS3;
-import com.amazonaws.services.s3.model.CannedAccessControlList;
-import com.amazonaws.services.s3.model.PutObjectRequest;
-import com.amazonaws.services.s3.model.S3Object;
-import com.amazonaws.services.s3.model.S3ObjectInputStream;
+import com.amazonaws.services.s3.model.*;
 import com.amazonaws.util.IOUtils;
+import jakarta.servlet.ServletContext;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.File;
-import java.io.FileOutputStream;
 import java.io.IOException;
-import java.util.concurrent.Executors;
-import java.util.concurrent.ScheduledExecutorService;
-import java.util.concurrent.TimeUnit;
+import java.nio.file.Files;
+import java.util.concurrent.*;
 
 @Service
 public class AwsS3ServiceImpl implements AwsS3Service {
@@ -26,6 +23,8 @@ public class AwsS3ServiceImpl implements AwsS3Service {
     private String endpointUrl;
     @Autowired
     private AmazonS3 s3Client;
+    @Autowired
+    private ServletContext servletContext;
 
     @Override
     public String upload(MultipartFile multipartFile, String folderName) {
@@ -33,21 +32,37 @@ public class AwsS3ServiceImpl implements AwsS3Service {
         final String fileName = folderName + "/" + System.currentTimeMillis() + "_" + multipartFile.getOriginalFilename();
         final String fileUrl = endpointUrl + "/" + bucketName + "/" + fileName;
         final PutObjectRequest putRequest = new PutObjectRequest(this.bucketName, fileName, file);
-        putRequest.withCannedAcl(CannedAccessControlList.PublicRead);
+        putRequest.withCannedAcl(CannedAccessControlList.PublicReadWrite);
         this.s3Client.putObject(putRequest);
         this.scheduleFileDeletion(file);
         return fileUrl;
     }
-
+    private File convertMultipartFileToFile(MultipartFile multipartFile) {
+        File fileConvert = null;
+        try {
+            String rootPath = servletContext.getRealPath("/");
+            File tempDir = new File(rootPath + File.separator + "temp");
+            if (!tempDir.exists()) {
+                tempDir.mkdirs();
+            }
+            fileConvert = File.createTempFile("temp", null, tempDir);
+            multipartFile.transferTo(fileConvert);
+        } catch (IOException e) {
+            System.out.println(e.getMessage());
+        }
+        return fileConvert;
+    }
     private void scheduleFileDeletion(File file) {
-        // You can use a scheduled task executor or a timer to delete the file after some time
-        // For example, using a ScheduledExecutorService
         ScheduledExecutorService executorService = Executors.newSingleThreadScheduledExecutor();
         executorService.schedule(() -> {
-            System.out.println("delete");
-            file.delete();
-            executorService.shutdown(); // Shut down the executor after deleting the file
-        }, 5, TimeUnit.MINUTES); // Delete the file after 10 minutes (you can adjust this time as needed)
+            try {
+                Files.delete(file.toPath());
+            } catch (IOException e) {
+                System.err.println("Error deleting file: " + e.getMessage());
+                throw new RuntimeException(e);
+            }
+        }, 30, TimeUnit.MILLISECONDS);
+        executorService.shutdown();
     }
 
     @Override
@@ -65,20 +80,16 @@ public class AwsS3ServiceImpl implements AwsS3Service {
     }
 
     @Override
-    public String delete(String fileName) {
-        this.s3Client.deleteObject(this.bucketName, fileName);
-        return "Deleted!";
+    public void delete(String fileName, String folder) {
+        try {
+            final String _fileName = folder+"/"+fileName;
+            DeleteObjectRequest deleteObjectRequest = new DeleteObjectRequest(this.bucketName,_fileName);
+            this.s3Client.deleteObject(deleteObjectRequest);
+        } catch (AmazonServiceException e){
+            System.err.println(e.getMessage());
+        }
     }
 
-    private File convertMultipartFileToFile(MultipartFile multipartFile) {
-        File fileConvert = new File(multipartFile.getOriginalFilename());
-        try {
-            FileOutputStream fileOutputStream = new FileOutputStream(fileConvert);
-            fileOutputStream.write(multipartFile.getBytes());
-        } catch (IOException e) {
-            System.out.println(e.getMessage());
-        }
-        return fileConvert;
-    }
+
 
 }

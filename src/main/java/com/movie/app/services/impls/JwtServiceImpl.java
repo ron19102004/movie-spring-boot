@@ -5,7 +5,6 @@ import com.movie.app.services.JwtService;
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
-import org.slf4j.LoggerFactory;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 
@@ -18,7 +17,7 @@ import java.util.function.Function;
 @Service
 public class JwtServiceImpl implements JwtService {
     private final String KEY_SECRET = "Cc6tJXABIioNn5fSRTfhTcPWky0lFnSP7eZL2pS9b4upvEE7oT7Qn11KHyVxXt0I\n";
-    private final int expirate = 60 * 60 * 24;
+
 
     @Override
     public String extractUsername(String token) {
@@ -32,11 +31,13 @@ public class JwtServiceImpl implements JwtService {
 
     @Override
     public String generate(UserDetails userDetails, Map<String, Object> claims) {
+        long timeCurrent = System.currentTimeMillis();
+        long EXPIRATION_TIME_MS = 3600 * 1000 * 2;
         return Jwts.builder()
                 .setClaims(claims)
                 .setSubject(userDetails.getUsername())
-                .setIssuedAt(new Date(System.currentTimeMillis()))
-                .setExpiration(new Date(System.currentTimeMillis() + expirate))
+                .setIssuedAt(new Date(timeCurrent))
+                .setExpiration(new Date(timeCurrent + EXPIRATION_TIME_MS))
                 .signWith(this.getSigningKey(), SignatureAlgorithm.HS256)
                 .compact();
     }
@@ -64,10 +65,13 @@ public class JwtServiceImpl implements JwtService {
     @Override
     public boolean isTokenValid(String token) {
         try {
-            boolean validExpired = this.extractClaims(token, Claims::getExpiration).before(new Date());
-            if (validExpired) {
+            // Extract expiration claim from the token
+            Date expirationDate = this.extractClaims(token, Claims::getExpiration);
+            // Check if the token is expired
+            if (expirationDate.before(new Date())) {
                 throw new TokenExpiredException("Token has expired");
             }
+            // If the token is not expired, return true
             return true;
         } catch (MalformedJwtException e) {
             System.err.println("Invalid JWT token: " + e.getMessage());
@@ -78,6 +82,7 @@ public class JwtServiceImpl implements JwtService {
         } catch (IllegalArgumentException e) {
             System.err.println("JWT claims string is empty: " + e.getMessage());
         }
+        // Return false for any other exceptions
         return false;
     }
 }

@@ -7,5 +7,5 @@ public interface AwsS3Service {
 
     byte[] download(String fileName,String folder);
 
-    String delete(String fileName);
+    void delete(String fileName, String folder);
 }

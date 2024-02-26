@@ -9,7 +9,7 @@ import java.util.List;
 
 @EqualsAndHashCode(callSuper = true)
 @Entity
-@Table(name = "movies")
+@Table(name = "movies",indexes = @Index(columnList = "name", name = "index_name_movies"))
 @NoArgsConstructor
 @AllArgsConstructor
 @Data

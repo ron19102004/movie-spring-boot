@@ -12,7 +12,7 @@ import java.util.List;
 
 @EqualsAndHashCode(callSuper = true)
 @Entity
-@Table(name = "users")
+@Table(name = "users",indexes = @Index(columnList = "username",name = "index_username_users"))
 @NoArgsConstructor
 @AllArgsConstructor
 @Data
@@ -20,7 +20,7 @@ import java.util.List;
 public class User extends BaseEntity implements UserDetails {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
-    @Column(name = "user_id")
+    @Column(name = "user_id",unique = true)
     private Long id;
     @Column(nullable = false)
     private String fullName;

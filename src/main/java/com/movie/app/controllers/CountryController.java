@@ -20,7 +20,7 @@ public class CountryController extends GlobalExceptionHandler {
 
     @PostMapping("/new")
     @PreAuthorize("hasAuthority('ADMIN')")
-    public ResponseEntity<ResponseData> create(@RequestBody @NotNull CreateCountryDto createCountryDto) {
+    public ResponseEntity<ResponseData> create(@RequestBody() @NotNull CreateCountryDto createCountryDto) {
         return ResponseEntity.ok(ResponseData.builder()
                 .status(true)
                 .message("Created!")
