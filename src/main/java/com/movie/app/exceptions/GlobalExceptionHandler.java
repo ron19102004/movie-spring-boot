@@ -13,15 +13,15 @@ import java.sql.SQLException;
 
 @RestControllerAdvice
 public class GlobalExceptionHandler {
-    @ExceptionHandler(Exception.class)
-    public ResponseEntity<ResponseData> handleServiceException(Exception e) {
-        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                .body(ResponseData.builder()
-                        .status(false)
-                        .message(e.getMessage())
-                        .data(null)
-                        .build());
-    }
+//    @ExceptionHandler(Exception.class)
+//    public ResponseEntity<ResponseData> handleServiceException(Exception e) {
+//        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+//                .body(ResponseData.builder()
+//                        .status(false)
+//                        .message(e.getMessage())
+//                        .data(null)
+//                        .build());
+//    }
 
     @ExceptionHandler(SQLException.class)
     public ResponseEntity<ResponseData> handleSQLException(SQLException exception) {
@@ -31,6 +31,16 @@ public class GlobalExceptionHandler {
                 .data(null)
                 .build());
     }
+
+    @ExceptionHandler(UnsupportedOperationException.class)
+    public ResponseEntity<ResponseData> handleUnsupportedOperationException(UnsupportedOperationException exception) {
+        return ResponseEntity.status(HttpStatus.BAD_GATEWAY).body(ResponseData.builder()
+                .status(false)
+                .message("Server Error:" + exception.getMessage())
+                .data(null)
+                .build());
+    }
+
     @ExceptionHandler(AuthenticationException.class)
     public ResponseEntity<ResponseData> handleAuthenticationException(AuthenticationException exception) {
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(ResponseData.builder()
@@ -39,12 +49,13 @@ public class GlobalExceptionHandler {
                 .data(exception.getMessage())
                 .build());
     }
+
     @ExceptionHandler(MissingServletRequestParameterException.class)
     public ResponseEntity<ResponseData> handleMissingServletRequestParameterException(MissingServletRequestParameterException exception) {
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(ResponseData.builder()
                 .status(false)
-                .message("Missing Request Parameter !!")
-                .data(exception.getMessage())
+                .message("Missing Request Parameter !!:" + exception.getMessage())
+                .data(null)
                 .build());
     }
 

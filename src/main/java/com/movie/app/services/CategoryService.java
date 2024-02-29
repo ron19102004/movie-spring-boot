@@ -1,12 +1,14 @@
 package com.movie.app.services;
 
 import com.movie.app.entities.Category;
+import com.movie.app.interfaces.ServiceDelete;
+import com.movie.app.interfaces.ServiceReader;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.util.List;
-
-public interface CategoryService {
+public interface CategoryService extends
+        ServiceReader<Category, Long>,
+        ServiceDelete<Long> {
     Category create(String name, MultipartFile file);
-    List<Category> find();
-    Category updateImage(Long id,MultipartFile file);
+
+    Category updateImage(Long id, MultipartFile file);
 }

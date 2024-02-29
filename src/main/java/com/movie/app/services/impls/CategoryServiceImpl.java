@@ -13,6 +13,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
+import java.util.Optional;
 
 @Service
 @Transactional
@@ -43,14 +44,26 @@ public class CategoryServiceImpl implements CategoryService {
 
     @Override
     public Category updateImage(Long id, MultipartFile file) {
-        Category byId = this.categoryRepository.findById(id).orElse(null);
-        if(byId == null) throw new ServiceException("Category is not found");
-        String image = this.awsS3Service.upload(file,this.folderImage);
-        String[] imageById = byId.getImage().split("/");
-        String imageByIdName = imageById[imageById.length-1];
-        this.awsS3Service.delete(imageByIdName,this.folderImage);
+        Category byId = this.findById(id).orElseThrow(() -> new ServiceException("Category is not found"));
+        String image = this.awsS3Service.upload(file, this.folderImage);
+        if (!byId.getImage().isEmpty() && !byId.getImage().isBlank()) {
+            String[] imageById = byId.getImage().split("/");
+            String imageByIdName = imageById[imageById.length - 1];
+            this.awsS3Service.delete(imageByIdName, this.folderImage);
+        }
         byId.setImage(image);
         this.entityManager.merge(byId);
         return byId;
+    }
+
+    @Override
+    public Optional<Category> findById(Long id) {
+        return this.categoryRepository.findById(id);
+    }
+
+
+    @Override
+    public void delete(Long id) {
+        this.categoryRepository.deleteById(id);
     }
 }

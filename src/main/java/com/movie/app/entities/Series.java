@@ -13,7 +13,7 @@ import java.util.List;
 @Data
 @Entity
 @Builder
-@Table(name = "series")
+@Table(name = "series", indexes = @Index(columnList = "series_id"))
 public class Series extends BaseEntity{
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
@@ -33,7 +33,7 @@ public class Series extends BaseEntity{
     @Column(nullable = false)
     private Integer episodes;
     @ColumnDefault("0")
-    private Integer episodes_release;
+    private Integer episodesRelease;
 
     @OneToMany(mappedBy = "series",cascade = CascadeType.ALL)
     private List<Movie> movies;

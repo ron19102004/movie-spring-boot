@@ -37,7 +37,7 @@ public class Movie extends BaseEntity{
     @ColumnDefault("false")
     private Boolean deleted;
     @ColumnDefault("false")
-    private Boolean is_vip;
+    private Boolean isVip;
 
     @ManyToOne
     @JoinColumn(name = "category_id", nullable = false, referencedColumnName = "category_id")

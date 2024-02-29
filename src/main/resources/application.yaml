@@ -28,3 +28,5 @@ cloud:
       auto: false
     bucket:
       name: movie-spring
+jwt:
+  secret-key: Cc6tJXABIioNn5fSRTfhTcPWky0lFnSP7eZL2pS9b4upvEE7oT7Qn11KHyVxXt0I

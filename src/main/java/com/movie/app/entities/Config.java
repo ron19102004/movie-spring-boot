@@ -2,6 +2,7 @@ package com.movie.app.entities;
 
 import jakarta.persistence.*;
 import lombok.*;
+import org.hibernate.annotations.ColumnDefault;
 
 @EqualsAndHashCode(callSuper = true)
 @Entity
@@ -15,10 +16,12 @@ public class Config extends BaseEntity{
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
     @Column(nullable = false)
-    private String name_web;
+    private String nameWeb;
     @Column(nullable = false)
-    private String email_admin;
-    private String icon_web;
-    private String banner_intro;
-    private String facebook_page_link;
+    private String emailAdmin;
+    private String iconWeb;
+    private String bannerIntro;
+    private String facebookPageLink;
+    @ColumnDefault("false")
+    private Boolean isActive;
 }

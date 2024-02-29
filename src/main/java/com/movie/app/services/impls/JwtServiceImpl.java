@@ -5,6 +5,7 @@ import com.movie.app.services.JwtService;
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 
@@ -16,9 +17,8 @@ import java.util.function.Function;
 
 @Service
 public class JwtServiceImpl implements JwtService {
-    private final String KEY_SECRET = "Cc6tJXABIioNn5fSRTfhTcPWky0lFnSP7eZL2pS9b4upvEE7oT7Qn11KHyVxXt0I\n";
-
-
+    @Value("{jwt.secret-key}")
+    private String KEY_SECRET;
     @Override
     public String extractUsername(String token) {
         return this.extractClaims(token, Claims::getSubject);

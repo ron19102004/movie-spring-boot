@@ -21,7 +21,7 @@ public class Comment extends BaseEntity{
     private String content;
     @Temporal(TemporalType.DATE)
     @Column(nullable = false)
-    private Date commented_at;
+    private Date commentedAt;
     @Column(name = "reply_id")
     private Long reply;
 

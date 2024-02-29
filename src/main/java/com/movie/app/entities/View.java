@@ -18,7 +18,7 @@ public class View extends BaseEntity{
     private Long id;
     @Temporal(TemporalType.DATE)
     @Column(nullable = false)
-    private Date viewed_at;
+    private Date viewedAt;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "movie_id",nullable = false,referencedColumnName = "movie_id")

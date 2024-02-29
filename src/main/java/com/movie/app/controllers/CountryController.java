@@ -33,7 +33,7 @@ public class CountryController extends GlobalExceptionHandler {
         return ResponseEntity.ok(ResponseData.builder()
                 .status(true)
                 .message("Query successfully!")
-                .data(this.countryService.findAll())
+                .data(this.countryService.find())
                 .build());
     }
 

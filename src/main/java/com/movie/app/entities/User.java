@@ -8,11 +8,13 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @EqualsAndHashCode(callSuper = true)
 @Entity
-@Table(name = "users",indexes = @Index(columnList = "username",name = "index_username_users"))
+@Table(name = "users", indexes = @Index(columnList = "username", name = "index_username_users"))
 @NoArgsConstructor
 @AllArgsConstructor
 @Data
@@ -20,20 +22,20 @@ import java.util.List;
 public class User extends BaseEntity implements UserDetails {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
-    @Column(name = "user_id",unique = true)
+    @Column(name = "user_id", unique = true)
     private Long id;
     @Column(nullable = false)
     private String fullName;
-    @Column(nullable = false,unique = true)
+    @Column(nullable = false, unique = true)
     private String username;
     @Column(nullable = false)
     private String password;
-    @Column(nullable = false,unique = true)
+    @Column(nullable = false, unique = true)
     private String phone;
     @Column(nullable = false)
     private String email;
     @ColumnDefault("false")
-    private Boolean is_vip;
+    private Boolean isVip;
     @ColumnDefault("false")
     private Boolean confirmed;
     @Column(nullable = false)
@@ -47,6 +49,17 @@ public class User extends BaseEntity implements UserDetails {
     private List<Comment> comments;
     @OneToMany(mappedBy = "user")
     private List<StarRate> starRates;
+
+    public Map<String, Object> toMapData() {
+        Map<String, Object> data = new HashMap<>();
+        data.put("username", this.getUsername());
+        data.put("password", this.getPassword());
+        data.put("fullName", this.getFullName());
+        data.put("vip", this.getIsVip());
+        data.put("phone", this.getPhone());
+        data.put("email", this.getEmail());
+        return data;
+    }
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {

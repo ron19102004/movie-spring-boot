@@ -33,14 +33,4 @@ public class AuthRegisterDto {
     @Length(min = 10, max = 11)
     private String phone;
 
-    public Map<String,Object> response(User user){
-        Map<String,Object> data = new HashMap<>();
-        data.put("username",user.getUsername());
-        data.put("password",user.getPassword());
-        data.put("fullName",user.getFullName());
-        data.put("vip",user.getIs_vip());
-        data.put("phone",user.getPhone());
-        data.put("email",user.getEmail());
-        return data;
-    }
 }

@@ -8,16 +8,12 @@ import com.movie.app.exceptions.ServiceException;
 import com.movie.app.repositories.UserRepository;
 import com.movie.app.services.JwtService;
 import com.movie.app.utils.ValidateCustom;
-import org.hibernate.JDBCException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
-
-import java.sql.SQLException;
-import java.util.List;
 import java.util.Map;
 
 @Service
@@ -70,7 +66,6 @@ public class AuthServiceImpl implements AuthService {
                 .fullName(authRegisterDto.getFullName())
                 .role(Role.USER)
                 .build();
-        User userRepo = this.userRepository.save(user);
-        return authRegisterDto.response(userRepo);
+        return this.userRepository.save(user).toMapData();
     }
 }

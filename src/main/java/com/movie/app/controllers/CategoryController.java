@@ -1,5 +1,6 @@
 package com.movie.app.controllers;
 
+import com.movie.app.entities.Category;
 import com.movie.app.exceptions.GlobalExceptionHandler;
 import com.movie.app.services.CategoryService;
 import com.movie.app.utils.ResponseData;
@@ -16,7 +17,6 @@ import org.springframework.web.multipart.MultipartFile;
 public class CategoryController extends GlobalExceptionHandler {
     @Autowired
     private CategoryService categoryService;
-
     @PostMapping("/new")
     @PreAuthorize("hasAuthority('ADMIN')")
     public ResponseEntity<ResponseData> create(@RequestParam("name") @NotNull @Length(min = 2) String name,
@@ -27,7 +27,6 @@ public class CategoryController extends GlobalExceptionHandler {
                 .data(this.categoryService.create(name, file))
                 .build());
     }
-
     @GetMapping("")
     public ResponseEntity<ResponseData> getAll() {
         return ResponseEntity.ok(ResponseData.builder()
@@ -36,7 +35,6 @@ public class CategoryController extends GlobalExceptionHandler {
                 .data(this.categoryService.find())
                 .build());
     }
-
     @PatchMapping("/update-image/{id}")
     @PreAuthorize("hasAuthority('ADMIN')")
     public ResponseEntity<ResponseData> updateImage(
@@ -46,6 +44,17 @@ public class CategoryController extends GlobalExceptionHandler {
                 .status(true)
                 .message("Updated!")
                 .data(this.categoryService.updateImage(id, file))
+                .build());
+    }
+    @DeleteMapping("/{id}")
+    @PreAuthorize("hasAuthority('ADMIN')")
+    public ResponseEntity<ResponseData> delete(
+            @PathVariable("id") @NotNull Long id) {
+        this.categoryService.delete(id);
+        return ResponseEntity.ok(ResponseData.builder()
+                .status(true)
+                .message("Deleted!")
+                .data(null)
                 .build());
     }
 }
